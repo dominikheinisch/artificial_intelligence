@@ -31,18 +31,10 @@ class Phenotype(object):
             self.factories[j], self.factories[k] = self.factories[k], self.factories[j]
 
     def crossover(self, parent):
-        # locations1, locations2 = self.factories.copy(), parent.factories.copy()
-        # pivot = np.random.randint(1, self.size - 1)  # random index but not first and last
-        # locations1[pivot:] = locations2[pivot:]
-        # number_of_occurrences = np.bincount(locations1, minlength=self.size)
-        # for replace_from, replace_to in zip(np.where(number_of_occurrences == 2)[0],
-        #                                     np.where(number_of_occurrences == 0)[0]):
-        #     locations1[np.where(locations1 == replace_from)[0][0]] = replace_to
-        # return Phenotype(size = self.size, factories = locations1, m_flow = self.m_flow, m_dist = self.m_dist)
-        # # 0. 2 3. 6 1. 4 5   +
-        # # 5. 4 1. 6 4. 3 2   ==
-        # # 0. 4 1. 6 1. 3 2   repair
-        # # 0. 4 5. 6 1. 3 2
+        # 0. 2 3. 6 1. 4 5   +
+        # 5. 4 1. 6 4. 3 2   ==
+        # 0. 4 1. 6 1. 3 2   repair eg.
+        # 0. 4 5. 6 1. 3 2
         divide_points = random.sample(range(self.size), self.no_divisions)
         divide_points.extend([0, self.size])
         divide_points.sort()
@@ -77,25 +69,6 @@ class Phenotype(object):
                 list_twice_contains.remove(self.factories[i])
                 self.factories[i] = list_not_contains.pop(0)
 
-    def calc_fitness_and_cost_fun(self, param=0):
+    def calc_fitness_and_cost_fun(self):
         new_m_dist = self.m_dist[:, self.factories][self.factories]
         self.val_cost_fun = np.sum(np.multiply(self.m_flow, new_m_dist))
-        # self.val_fitness_fun = self.fitness_function(self.val_cost_fun, param)
-
-    # @staticmethod
-    # def fitness_function(cost, param):
-    #     result = 0
-    #     if param > cost:
-    #         result = (param - cost) / param * (param - cost) #/ param * (param - cost)
-    #     return result
-
-    # def softmax(x):
-    #     """
-    #     Compute softmax values for each sets of scores in x.
-    #     :param x: given vector with shape(N,)
-    #     :return: normalized vector with same shape
-    #     """
-    #     e_x = np.exp(x - np.max(x))
-    #     return e_x / e_x.sum(axis=0)
-
-    # self.probability_vector = softmax((self.cost_vector.sum()) / self.cost_vector)

@@ -1,12 +1,14 @@
 import numpy as np
 import random
-import time
 import copy
 
 from genetic_algorithm.solvers import Phenotype
 
 
 class Population(object):
+
+    IS_TOURNAMENT = True
+    TOURNAMENT_SIZE = 10
 
     def __init__(self, n, m_flow, m_dist, pop_size, prob_cross, prob_mutate, save_best, phenotypes=None):
         self.n, self.matrix_flow, self.matrix_distance = n, m_flow, m_dist
@@ -17,7 +19,7 @@ class Population(object):
         self.save_best = save_best
         self.new_phenotypes = []
         self.iter_costs = []
-        self.prob_list= []
+        self.prob_list = []
         self.iter_fitness = None
         self.min_cost = -1
         self.avg_cost = -1
@@ -27,10 +29,11 @@ class Population(object):
         self.no_draw_parents = self.pop_size - self.no_children
 
     def init_random_phenotypes(self):
-        self.phenotypes = [Phenotype(size=self.n,
-                                     m_flow=self.matrix_flow,
-                                     m_dist=self.matrix_distance)
-                           for i in range(self.pop_size)]
+        self.phenotypes = []
+        for i in range(self.pop_size):
+            self.phenotypes.append(Phenotype(size=self.n,
+                                             m_flow=self.matrix_flow,
+                                             m_dist=self.matrix_distance))
 
     def calc_cost_fitness_results(self):
         self.calc_fitness_and_cost_fun()
@@ -44,7 +47,7 @@ class Population(object):
         iter_fitness = np.asarray(self.iter_costs)
         val_max = np.amax(iter_fitness) * 1.01
         temp = (val_max - iter_fitness) / val_max
-        self.iter_fitness = np.multiply(val_max * temp, temp)
+        self.iter_fitness = np.multiply(np.multiply(val_max * temp, temp), temp)
 
     def calc_results(self):
         _len = len(self.iter_costs)
@@ -73,12 +76,12 @@ class Population(object):
 
     def crossover(self):
         for i in range(self.no_children):
-            index_arr = np.random.choice(self.pop_size, 2, p=self.prob_list)
+            index_arr = self.selection_indexes(2)
             self.new_phenotypes.append(self.phenotypes[index_arr[0]].crossover(self.phenotypes[index_arr[1]]))
 
     def selection_phenotypes_to_copy(self):
         for i in range(self.no_draw_parents):
-            index_arr = np.random.choice(self.pop_size, 1, p=self.prob_list)
+            index_arr = self.selection_indexes(1)
             self.new_phenotypes.append(self.phenotypes[index_arr[0]])
 
     def mutate_rand(self):
@@ -89,3 +92,15 @@ class Population(object):
     def get_result(self):
         return np.array([self.min_cost, self.avg_cost, self.max_cost])
 
+    def selection_indexes(self, no_phenotypes):
+        if self.IS_TOURNAMENT:
+            indexes = np.random.choice(self.pop_size, self.TOURNAMENT_SIZE * no_phenotypes)
+            len_ = indexes.shape[0]
+            costs = [(self.phenotypes[indexes[i]], indexes[i]) for i in range(len_)]
+            costs.sort(key=lambda x: x[0].val_cost_fun)
+            if no_phenotypes == 2:
+                return [costs[0][1], costs[1][1]]
+            else:
+                return [costs[0][1]]
+        else:
+            return np.random.choice(self.pop_size, no_phenotypes, p=self.prob_list)
