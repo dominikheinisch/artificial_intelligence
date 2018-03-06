@@ -1,17 +1,22 @@
 import numpy as np
 import random
 import copy
+from enum import Enum
 
 from genetic_algorithm.solvers import Phenotype
 
 
+class SelectionType(Enum):
+    TOURNAMENT_TYPE = 1
+    ROULETTE_TYPE = 2
+
+
 class Population(object):
-
-    IS_TOURNAMENT = True
-    TOURNAMENT_SIZE = 10
-
-    def __init__(self, n, m_flow, m_dist, pop_size, prob_cross, prob_mutate, save_best, phenotypes=None):
+    def __init__(self, n, m_flow, m_dist, pop_size, prob_cross, prob_mutate, save_best, selection_type,
+                 tournament_size, phenotypes=None):
         self.n, self.matrix_flow, self.matrix_distance = n, m_flow, m_dist
+        self.selection_type = selection_type
+        self.tournament_size = tournament_size
         self.pop_size = pop_size
         self.prob_cross = prob_cross
         self.prob_mutate = prob_mutate
@@ -68,7 +73,8 @@ class Population(object):
             self.new_phenotypes[0] = self.best_phenotype
         return Population(n=self.n, m_flow=self.matrix_flow, m_dist=self.matrix_distance, pop_size=self.pop_size,
                           prob_cross=self.prob_cross, prob_mutate=self.prob_mutate,
-                          phenotypes=self.new_phenotypes, save_best=self.save_best)
+                          phenotypes=self.new_phenotypes, save_best=self.save_best, selection_type=self.selection_type,
+                          tournament_size=self.tournament_size)
 
     def calc_prob_list(self):
         sum_val_fitness_fun = np.sum(self.iter_fitness)
@@ -93,8 +99,8 @@ class Population(object):
         return np.array([self.min_cost, self.avg_cost, self.max_cost])
 
     def selection_indexes(self, no_phenotypes):
-        if self.IS_TOURNAMENT:
-            indexes = np.random.choice(self.pop_size, self.TOURNAMENT_SIZE * no_phenotypes)
+        if self.selection_type == SelectionType.TOURNAMENT_TYPE:
+            indexes = np.random.choice(self.pop_size, self.tournament_size * no_phenotypes)
             len_ = indexes.shape[0]
             costs = [(self.phenotypes[indexes[i]], indexes[i]) for i in range(len_)]
             costs.sort(key=lambda x: x[0].val_cost_fun)
@@ -102,5 +108,5 @@ class Population(object):
                 return [costs[0][1], costs[1][1]]
             else:
                 return [costs[0][1]]
-        else:
+        elif self.selection_type == SelectionType.ROULETTE_TYPE:
             return np.random.choice(self.pop_size, no_phenotypes, p=self.prob_list)
