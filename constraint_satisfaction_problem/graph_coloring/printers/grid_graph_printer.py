@@ -14,6 +14,7 @@ NO_NODE_SHAPES = len(NODE_SHAPE_DICT)
 
 # number of possible different nodes: 7 * 5 == 35
 def print_grid_graph(adjacency_matrix, nodes_colors):
+    labels_colors = list(nodes_colors)
     size = len(nodes_colors)
     side = int(math.sqrt(size))
 
@@ -57,8 +58,10 @@ def print_grid_graph(adjacency_matrix, nodes_colors):
 
     # labels
     labels = {}
-    for node in G.nodes():
-        labels[node] = node
+    # for node in G.nodes():
+    #     labels[node] = node
+    for i in range(size):
+        labels[i] = labels_colors[i]
     nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color='w')
 
     # plot

@@ -1,3 +1,4 @@
-from constraint_satisfaction_problem.graph_coloring.solvers.backtracking import GraphColoringBacktracking
 from constraint_satisfaction_problem.graph_coloring.solvers.graph_coloring_solver import GraphColoringSolver
+from constraint_satisfaction_problem.graph_coloring.solvers.backtracking import GraphColoringBacktracking
+from constraint_satisfaction_problem.graph_coloring.solvers.backtracking import LatinSquareBacktracking
 
