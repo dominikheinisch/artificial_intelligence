@@ -2,3 +2,5 @@ results
 .idea
 csv
 __pycache__
+any_graph_solver*
+100.png

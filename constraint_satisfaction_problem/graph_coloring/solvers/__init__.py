@@ -1,0 +1,2 @@
+from constraint_satisfaction_problem.graph_coloring.solvers.coloring import GraphColoring
+

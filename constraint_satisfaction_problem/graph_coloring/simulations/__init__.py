@@ -1,0 +1,2 @@
+from constraint_satisfaction_problem.graph_coloring.simulations.simulation import Simulation
+

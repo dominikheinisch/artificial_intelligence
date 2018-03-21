@@ -1,0 +1,2 @@
+from constraint_satisfaction_problem.graph_coloring.generators.grid_generator import generate_grid_graph
+

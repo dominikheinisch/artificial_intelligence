@@ -1,0 +1,2 @@
+from constraint_satisfaction_problem.graph_coloring.printers.grid_graph_printer import print_grid_graph
+
