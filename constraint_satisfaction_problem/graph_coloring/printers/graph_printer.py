@@ -13,8 +13,8 @@ NO_NODE_SHAPES = len(NODE_SHAPE_DICT)
 
 
 # number of possible different nodes: 7 * 5 == 35
-def print_(matrix_edged, nodes_colors):
-    size = len(nodes_colors)
+def print_(matrix_edged, nodes_values):
+    size = len(nodes_values)
 
     # init graph
     G = nx.erdos_renyi_graph(size, 0.05)
@@ -27,10 +27,10 @@ def print_(matrix_edged, nodes_colors):
     for i in range(size):
         shape = 0
         for j in range(NO_NODE_SHAPES):
-            if nodes_colors[i] > NO_COLORS:
+            if nodes_values[i] > NO_COLORS:
                 shape += 1
-                nodes_colors[i] -= NO_COLORS
-        map_index_shape_color.update({i: (COLOR_DICT[nodes_colors[i]], NODE_SHAPE_DICT[shape])})
+                nodes_values[i] -= NO_COLORS
+        map_index_shape_color.update({i: (COLOR_DICT[nodes_values[i]], NODE_SHAPE_DICT[shape])})
     print(map_index_shape_color)
 
     shape_list = list(NODE_SHAPE_DICT.values())

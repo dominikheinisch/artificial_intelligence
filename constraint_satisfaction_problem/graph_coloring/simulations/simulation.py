@@ -23,8 +23,9 @@ class Simulation(object):
 
     def run(self):
         self.solver.run()
-        print_grid_graph(self.solver.adjacency_matrix, (self.solver.nodes_colors + 1))
-        return self.solver.colors_in_use_size, self.solver.nodes_colors, self.solver.simulation_time
+        print(self.solver.nodes_values_results)
+        print_grid_graph(self.solver.adjacency_matrix, (self.solver.nodes_values + 1))
+        return self.solver.colors_in_use_size, self.solver.nodes_values, self.solver.simulation_time
 
 
 class SimulationGraphColoring(Simulation):

@@ -4,15 +4,16 @@ import time
 
 # solves graph coloring problem for grid graph L(2,1)
 class GraphColoringSolver(object):
-    DEFAULT_COLOR = -2
+    DEFAULT_VALUE = -1
 
     def __init__(self, side, adjacency_matrix):
         self.side = side
         self.nodes_size = side * side
-        self.nodes_colors = np.zeros(shape=self.nodes_size, dtype=np.int8) + self.DEFAULT_COLOR
+        self.nodes_values = np.zeros(shape=self.nodes_size, dtype=np.int8) + self.DEFAULT_VALUE
         self.adjacency_matrix = adjacency_matrix
         self.colors_in_use_size = -1
         self.simulation_time = -1
+        self.nodes_values_results = []
 
     def run(self):
         start = time.time()
@@ -23,7 +24,7 @@ class GraphColoringSolver(object):
     def solve(self):
         pass
 
-    def check_conflicts(self, n, nodes_colors):
+    def check_conflicts(self, n, nodes_values):
         pass
 
     def check_given_colors(self, given_colors):
