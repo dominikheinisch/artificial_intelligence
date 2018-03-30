@@ -6,7 +6,7 @@ from genetic_algorithm import data_saver
 
 
 class MultipleSimulation(Simulation):
-    NO_ITERATIONS = 10
+    ITERATIONS_SIZE = 10
 
     def __init__(self, filename, result_filename, gen_size, no_iter=NO_ITERATIONS,
                  selection_type=SelectionType.ROULETTE_TYPE,

@@ -1,3 +1,0 @@
-from constraint_satisfaction_problem.graph_coloring.simulations.simulation import SimulationGraphColoring
-from constraint_satisfaction_problem.graph_coloring.simulations.simulation import SimulationLatinSquare
-

@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import math
 import os
+import copy
 
 # number of possible colors, without color white
 COLOR_DICT = {1: 'r', 2: 'b', 3: 'g', 4: 'y', 5: 'm', 6: 'c', 7: 'k'}
@@ -13,8 +14,8 @@ NO_NODE_SHAPES = len(NODE_SHAPE_DICT)
 
 
 # number of possible different nodes: 7 * 5 == 35
-def print_grid_graph(adjacency_matrix, nodes_values):
-    labels_colors = list(nodes_values)
+def print_grid_graph(filename, adjacency_matrix, nodes_values):
+    labels_colors = copy.deepcopy(nodes_values)
     size = len(nodes_values)
     side = int(math.sqrt(size))
 
@@ -63,10 +64,10 @@ def print_grid_graph(adjacency_matrix, nodes_values):
     for i in range(size):
         labels[i] = labels_colors[i]
     nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color='w')
-
     # plot
     plt.axis('off')
-    path = os.path.abspath(os.path.join('results', 'graph.png'))
-    plt.savefig(path)  # save as png
-    plt.show()
+    path = os.path.abspath(os.path.join('results', filename))
+    # plt.show()
+    # save as png
+    # plt.savefig(path)
 

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
-import constraint_satisfaction_problem.graph_coloring.any_graph_solver as mg
+import csp.any_graph_solver as mg
 
 # number of possible colors without color white
 COLOR_DICT = {1: 'r', 2: 'b', 3: 'g', 4: 'y', 5: 'm', 6: 'c', 7: 'k'}
@@ -31,10 +31,8 @@ def print_(matrix_edged, nodes_values):
                 shape += 1
                 nodes_values[i] -= NO_COLORS
         map_index_shape_color.update({i: (COLOR_DICT[nodes_values[i]], NODE_SHAPE_DICT[shape])})
-    print(map_index_shape_color)
 
     shape_list = list(NODE_SHAPE_DICT.values())
-    print(shape_list)
     for shape in shape_list:
         node_list = []
         color_list = []
@@ -67,5 +65,4 @@ def print_(matrix_edged, nodes_values):
 
 if __name__ == "__main__":
     a = mg.main()
-    print(a)
     print_(a[0], a[1])

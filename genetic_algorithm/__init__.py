@@ -4,9 +4,3 @@ from genetic_algorithm.solvers import Phenotype
 from genetic_algorithm.solvers import SelectionType
 from genetic_algorithm.solvers import Simulation
 from genetic_algorithm.solvers import MultipleSimulation
-
-
-
-
-
-
