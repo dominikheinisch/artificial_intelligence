@@ -5,50 +5,55 @@ from csp.solvers.graph_coloring_solver import GraphColoringSolver
 
 # solves graph coloring problem for grid graph L(2,1) using backtracking
 class GraphForwardSolver(GraphColoringSolver):
+
+    DEFAULT_VALUE = 0
+    BANNED_VALUE = -1
+    INSERTED_VALUE = 1
+
     def __init__(self, *args):
         super(GraphForwardSolver, self).__init__(*args)
         self.min_distance = -1
+        self.values_in_use_size = 1
+        self.forward_matrix = None
 
     def solve(self):
-        self.solve_backtracking()
+        self.solve_forward_checking()
 
-    def solve_backtracking(self):
+    def solve_forward_checking(self):
         while not self.nodes_values_results:
-            nodes_values = np.zeros(shape=self.nodes_size, dtype=np.int8) + self.DEFAULT_VALUE
-            self.values_in_use_size += 1
+            self.forward_matrix = np.zeros(shape=(self.nodes_size, self.values_in_use_size), dtype=np.int8) + self.DEFAULT_VALUE
+            # nodes_values = np.zeros(shape=self.nodes_size, dtype=np.int8) + self.DEFAULT_VALUE
             if self.calc_all_possible_results:
-                self.solve_all_backtracking_rec(0, np.copy(nodes_values))
+                self.solve_all_forward_checking_rec(0)
             else:
-                self.solve_backtracking_rec(0, np.copy(nodes_values))
+                self.solve_forward_checking_rec(0)
+            self.values_in_use_size += 1
 
-    def solve_backtracking_rec(self):
-        pass
 
-    def adjacent_agreement(self, n, nodes_values):
-        no_conflict = self.negated_adjacency_matrix[n] * (nodes_values[n] - self.DEFAULT_VALUE)
-        return np.min(np.absolute(np.multiply(self.adjacency_matrix[n], nodes_values)
-                                  + no_conflict - nodes_values[n])) > self.min_distance
-
-# solves graph coloring problem for grid graph L(2,1) using backtracking
-class GraphColoringBacktracking(GraphBacktrackingSolver):
-    # default value == -2, to ensure correct calculations for L(2,1) graph coloring
-    DEFAULT_COLOR = -2
+# solves graph coloring problem for grid graph L(2,1) using forward checking
+class GraphColoringForward(GraphForwardSolver):
 
     def __init__(self, double_adjacent_matrix, *args):
-        self.DEFAULT_VALUE = self.DEFAULT_COLOR
-        super(GraphColoringBacktracking, self).__init__(*args)
+        super(GraphColoringForward, self).__init__(*args)
         self.min_distance = 1
+        self.double_min_distance = 0
         self.values_in_use_size = 0
         self.double_adjacent_matrix = double_adjacent_matrix
         self.negate_double_adjacent_matrix = np.logical_not(double_adjacent_matrix)
 
-    def check_conflicts(self, n, nodes_values):
-        return self.adjacent_agreement(n, nodes_values) and self.double_adjacent_agreement(n, nodes_values)
+    def remove_conflicts(self, n, nodes_values):
+        self.remove_adjacency_conflits(n, nodes_values)
+        self.remove_double_adjacency_conflits(n, nodes_values)
 
-    def double_adjacent_agreement(self, n, nodes_values):
-        no_conflict = self.negate_double_adjacent_matrix[n] * (nodes_values[n] + 1)
-        return np.min(np.absolute(np.multiply(self.double_adjacent_matrix[n], nodes_values)
-                                  + no_conflict - nodes_values[n])) > 0
+    def remove_adjacency_conflits(self, n, nodes_values):
+        pass
+
+    def remove_double_adjacency_conflits(self, n, nodes_values):
+        pass
+
+        # no_conflict = self.negate_double_adjacent_matrix[n] * (nodes_values[n] + 1)
+        # return np.min(np.absolute(np.multiply(self.double_adjacent_matrix[n], nodes_values)
+        #                           + no_conflict - nodes_values[n])) > self.double_min_distance
 
     def solve_backtracking_rec(self, node, nodes_values):
         if node == self.nodes_size:

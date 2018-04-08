@@ -20,9 +20,6 @@ class GraphBacktrackingSolver(GraphColoringSolver):
             else:
                 self.solve_backtracking_rec(0, np.copy(nodes_values))
 
-    def solve_backtracking_rec(self):
-        pass
-
     def adjacent_agreement(self, n, nodes_values):
         no_conflict = self.negated_adjacency_matrix[n] * (nodes_values[n] - self.DEFAULT_VALUE)
         return np.min(np.absolute(np.multiply(self.adjacency_matrix[n], nodes_values)
@@ -38,6 +35,7 @@ class GraphColoringBacktracking(GraphBacktrackingSolver):
         self.DEFAULT_VALUE = self.DEFAULT_COLOR
         super(GraphColoringBacktracking, self).__init__(*args)
         self.min_distance = 1
+        self.double_min_distance = 0
         self.values_in_use_size = 0
         self.double_adjacent_matrix = double_adjacent_matrix
         self.negate_double_adjacent_matrix = np.logical_not(double_adjacent_matrix)
@@ -48,7 +46,7 @@ class GraphColoringBacktracking(GraphBacktrackingSolver):
     def double_adjacent_agreement(self, n, nodes_values):
         no_conflict = self.negate_double_adjacent_matrix[n] * (nodes_values[n] + 1)
         return np.min(np.absolute(np.multiply(self.double_adjacent_matrix[n], nodes_values)
-                                  + no_conflict - nodes_values[n])) > 0
+                                  + no_conflict - nodes_values[n])) > self.double_min_distance
 
     def solve_backtracking_rec(self, node, nodes_values):
         if node == self.nodes_size:

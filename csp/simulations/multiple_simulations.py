@@ -59,13 +59,11 @@ class MultipleSimulation:
             results[j] = s.get_results()
             data_saver.save(s.solver.nodes_values_results, self.filename + str(i) + '.txt')
             j += 1
-        data_saver.save(results, self.filename + '.txt')
-        print(results)
-
+        data_saver.save(results, self.filename + '_.txt')
         sides = results[:, 0]
         times = results[:, 1]
         possible_results = results[:, 3]
-        result_printer.print_results(filename=(self.filename + '.png'),
+        result_printer.print_results(filename=(self.filename + '_.png'),
                                      title=self.plot_message,
                                      sides=sides, times=times)
 

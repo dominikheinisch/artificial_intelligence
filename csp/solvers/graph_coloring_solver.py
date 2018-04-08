@@ -16,7 +16,6 @@ class GraphColoringSolver(object):
         self.calc_all_possible_results = calc_all_possible_results
         self.nodes_values_results = []
 
-
     def run(self):
         start = time.time()
         self.solve()
