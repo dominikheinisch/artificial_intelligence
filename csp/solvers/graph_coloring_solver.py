@@ -14,8 +14,9 @@ class GraphColoringSolver(object):
         self.negated_adjacency_matrix = np.logical_not(adjacency_matrix)
         self.values_in_use_size = -1
         self.solving_time = -1
-        self.nodes_values_results = []
         self.calc_all_possible_results = calc_all_possible_results
+        self.nodes_values_results = []
+
 
     def run(self):
         start = time.time()
@@ -41,4 +42,4 @@ class GraphColoringSolver(object):
         return self.nodes_values_results
 
     def get_solving_results(self):
-        return np.asarray([self.side, self.solving_time, self.values_in_use_size])
+        return np.asarray([self.side, self.solving_time, self.values_in_use_size, len(self.nodes_values_results)])

@@ -1,43 +1,75 @@
+import matplotlib.pyplot as plt
 import numpy as np
+from enum import Enum
 
-from csp.simulations import Simulation
-from genetic_algorithm.solvers import SelectionType
-from genetic_algorithm import data_saver
-
-
-class MultipleSimulation(Simulation):
-    NO_ITERATIONS = 10
-
-    # def __init__(self, filename, result_filename, gen_size, no_iter=NO_ITERATIONS,
-    #              selection_type=SelectionType.ROULETTE_TYPE,
-    #              tournament_size=Simulation.TOURNAMENT_SIZE, *args, **kwargs):
-    #     super(MultipleSimulation, self).__init__(filename=filename, gen_size=gen_size, *args, **kwargs)
-    #     self.no_iter = no_iter
-    #     self.arr_results = np.empty(shape=(gen_size, 3, no_iter))
-    #     self.results_min_avg_max_std = np.empty(shape=(self.gen_size, 6))
-    #     self.result_filename = result_filename
-    #     self.selection_type = selection_type
-    #     self.tournament_size = tournament_size
-    #
-    # def run(self):
-    #     simulation = Simulation(self.filename, pop_size=self.pop_size, gen_size=self.gen_size,
-    #                             prob_cross=self.prob_cross, prob_mutate=self.prob_mutate, save_best=False,
-    #                             selection_type=self.selection_type, tournament_size=self.tournament_size)
-    #     simulation.run()
-    #     self.arr_results[:, :, 0] = simulation.list_results
-    #     for i in range(1, self.no_iter):
-    #         simulation.run()
-    #         self.arr_results[:, :, i] = simulation.list_results
-    #     print(self.arr_results)
-    #     min_avg_max = np.sum(self.arr_results, axis=2) / self.no_iter
-    #     std = np.std(self.arr_results, axis=2)
-    #     self.results_min_avg_max_std[:, :3] = min_avg_max
-    #     self.results_min_avg_max_std[:, 3:] = std
-    #     self.results_min_avg_max_std = self.results_min_avg_max_std[:, np.array([0, 3, 1, 4, 2, 5])]
-    #     data_saver.save(result=self.results_min_avg_max_std, filename=self.result_filename)
-    #
-    # def update_results(self, no_iter):
-    #     self.list_results[no_iter] = self.list_populations[no_iter].get_result()
+from csp.simulations import SolutionType
+from csp.simulations import SimulationGraphColoring
+from csp.simulations import SimulationLatinSquare
+from csp.printers import result_printer
+from csp.utils import data_saver
 
 
+class SimulationType(Enum):
 
+    GRAPH_COLORING = 1
+    LATIN_SQUARE = 2
+
+
+class MultipleSimulation():
+
+    FILENAME_COLORING = 'graph_coloring'
+    FILENAME_LATIN_SQUARE = 'latin_square'
+
+    def __init__(self, simulation_type, solution_type, min_side, max_side, calc_all_possible_results=False, plot=False):
+        self.simulation_type = simulation_type
+        self.solution_type = solution_type
+        if simulation_type == SimulationType.GRAPH_COLORING:
+            self.filename = self.FILENAME_COLORING
+        elif simulation_type == SimulationType.LATIN_SQUARE:
+            self.filename = self.FILENAME_LATIN_SQUARE
+        self.min_side = min_side
+        self.max_side = max_side
+        self.calc_all_possible_results = calc_all_possible_results
+        self.plot = plot
+        if solution_type == SolutionType.BACKTRACKING:
+            self.print_message = "_backtracking"
+            self.plot_mesaage = " - backtracking"
+        elif solution_type == SolutionType.FORWARD_CHECKING:
+            self.print_message = "_forward_checking"
+            self.plot_mesaage = " - _forward checking"
+        if calc_all_possible_results:
+            self.print_message += "_all_results_"
+            self.plot_mesaage += " - all results"
+        else:
+            self.print_message += "_first_result_"
+            self.plot_mesaage += " - first result"
+
+    def run(self):
+        results = np.empty(shape=(self.max_side - self.min_side, 4))
+        j = 0
+        for i in range(self.min_side, self.max_side):
+            if self.simulation_type == SimulationType.GRAPH_COLORING:
+                s = SimulationGraphColoring(i, self.filename + str(i), self.calc_all_possible_results, self.plot)
+            elif self.simulation_type == SimulationType.FILENAME_LATIN_SQUARE:
+                s = SimulationLatinSquare(i, self.filename + str(i), self.calc_all_possible_results, self.plot)
+            s.run()
+            results[j] = s.get_results()
+            data_saver.save(s.solver.nodes_values_results, self.filename +
+                            'backtracking_all_results_' + str(i) + '.txt')
+            j += 1
+        data_saver.save(results, self.filename + '.txt')
+        print(results)
+
+        sides = results[:, 0]
+        times = results[:, 1]
+        values_size = results[:, 2]
+        print(times)
+
+        result_printer.print_results(filename=(self.filename + self.print_message + '.png'),
+                                     title=self.filename + self.plot_mesaage,
+                                     sides=sides, times=times)
+
+        result_printer.print_results_log(filename=(self.filename + self.print_message + 'log.png'),
+                                         title=self.filename + self.plot_mesaage + ' - log time scale',
+                                         sides=sides, times=times)
+        plt.show()

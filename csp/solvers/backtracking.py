@@ -19,7 +19,6 @@ class GraphBacktrackingSolver(GraphColoringSolver):
                 self.solve_all_backtracking_rec(0, np.copy(nodes_values))
             else:
                 self.solve_backtracking_rec(0, np.copy(nodes_values))
-            print('values_in_use_size:', self.values_in_use_size)
 
     def solve_backtracking_rec(self):
         pass
@@ -90,13 +89,13 @@ class LatinSquareBacktracking(GraphBacktrackingSolver):
         if i == self.nodes_size:
             self.nodes_values = self.nodes_values
             self.nodes_values_results.append(list(self.nodes_values))
-            return True
+            return
         for c in range(self.values_in_use_size):
             self.nodes_values[i] = c
             if self.check_conflicts(i) and self.solve_backtracking_rec(i + 1):
-                return True
+                return
             self.nodes_values[i] = self.DEFAULT_VALUE
-        return False
+        return
 
     def solve_all_backtracking_rec(self, i):
         if i == self.nodes_size:
@@ -118,4 +117,3 @@ class LatinSquareBacktracking(GraphBacktrackingSolver):
             self.solve_all_backtracking_rec(0)
         else:
             self.solve_backtracking_rec(0, np.copy(nodes_values))
-        print('values_in_use_size:', self.values_in_use_size)

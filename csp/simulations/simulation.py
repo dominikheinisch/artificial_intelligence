@@ -1,16 +1,9 @@
-from enum import Enum
-
 from csp.generators import generate_adjacency_matrix_graph_coloring
 from csp.generators import generate_double_adjacency_matrix_graph_coloring
 from csp.generators import generate_adjacency_matrix_latin_square
 from csp.solvers import GraphColoringBacktracking
 from csp.solvers import LatinSquareBacktracking
 from csp.printers import grid_graph_printer
-
-
-class SolutionType(Enum):
-    FORWARD_CHECKING = 1
-    BACKTRACKING = 2
 
 
 class Simulation(object):

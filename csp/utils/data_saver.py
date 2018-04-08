@@ -7,3 +7,4 @@ def save(list_, filename, path_up=''):
     with open(path, 'w', newline='') as my_csv:
         csv_writer = csv.writer(my_csv)
         csv_writer.writerows(list_)
+        print(list_)
