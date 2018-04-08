@@ -2,7 +2,6 @@ import numpy as np
 import time
 
 
-# solves graph coloring problem for grid graph L(2,1)
 class GraphColoringSolver(object):
     DEFAULT_VALUE = -1
 

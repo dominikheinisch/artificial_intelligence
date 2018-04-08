@@ -59,15 +59,13 @@ def print_grid_graph(filename, adjacency_matrix, nodes_values):
 
     # labels
     labels = {}
-    # for node in G.nodes():
-    #     labels[node] = node
     for i in range(size):
         labels[i] = labels_colors[i]
     nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color='w')
     # plot
     plt.axis('off')
     path = os.path.abspath(os.path.join('results', filename))
-    # plt.show()
     # save as png
-    # plt.savefig(path)
+    plt.savefig(path)
+    plt.show()
 
