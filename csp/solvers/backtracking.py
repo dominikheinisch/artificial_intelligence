@@ -101,7 +101,6 @@ class LatinSquareBacktracking(GraphBacktrackingSolver):
 
     def solve_all_backtracking_rec(self, i):
         if i == self.nodes_size:
-            # self.nodes_values = self.nodes_values
             self.nodes_values_results.append(list(self.nodes_values))
             return
         for c in range(self.values_in_use_size):

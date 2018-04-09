@@ -69,5 +69,4 @@ class MultipleSimulation:
             result_printer.print_possible_results(filename=(self.filename + '_possibilities.png'),
                                                   title=self.plot_message+ ' - possibilities',
                                                   sides=sides, results=possible_results)
-        # TODO uncomment
-        # plt.show()
+        plt.show()

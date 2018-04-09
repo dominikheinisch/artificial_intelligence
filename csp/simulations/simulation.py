@@ -4,7 +4,7 @@ from csp.generators import generate_adjacency_matrix_graph_coloring
 from csp.generators import generate_double_adjacency_matrix_graph_coloring
 from csp.generators import generate_adjacency_matrix_latin_square
 from csp.solvers import GraphColoringBacktracking, GraphColoringForward
-from csp.solvers import LatinSquareBacktracking
+from csp.solvers import LatinSquareBacktracking, LatinSquareForward
 from csp.printers import grid_graph_printer
 
 
@@ -14,7 +14,7 @@ class SolutionType(Enum):
     FORWARD_CHECKING = 2
 
 
-class Simulation(object):
+class Simulation:
     SIDE = 3
     FILENAME = 'graph'
 
@@ -56,4 +56,9 @@ class SimulationLatinSquare(Simulation):
     def __init__(self, *args):
         super(SimulationLatinSquare, self).__init__(*args)
         self.adjacency_matrix = generate_adjacency_matrix_latin_square(self.side)
-        self.solver = LatinSquareBacktracking(self.side, self.adjacency_matrix, self.calc_all_possible_results)
+        # if self.solution_type == SolutionType.BACKTRACKING:
+        #     self.solver = LatinSquareBacktracking(self.side, self.adjacency_matrix, self.calc_all_possible_results)
+        # elif self.solution_type == SolutionType.FORWARD_CHECKING:
+        #     self.solver = LatinSquareForward(self.side, self.adjacency_matrix, self.calc_all_possible_results)
+        print(self.solution_type)
+        self.solver = LatinSquareForward(self.side, self.adjacency_matrix, self.calc_all_possible_results)
