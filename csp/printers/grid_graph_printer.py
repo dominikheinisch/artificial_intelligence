@@ -68,4 +68,3 @@ def print_grid_graph(filename, adjacency_matrix, nodes_values):
     # save as png
     plt.savefig(path)
     plt.show()
-

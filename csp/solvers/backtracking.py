@@ -73,7 +73,7 @@ class GraphColoringBacktracking(GraphBacktrackingSolver):
                 nodes_values[node] = c
                 if self.check_conflicts(node, nodes_values):
                     self.solve_all_backtracking_rec(node + 1, nodes_values)
-            nodes_values[node] = temp
+                nodes_values[node] = temp
         return
 
 

@@ -27,7 +27,8 @@ class GraphForwardSolver(GraphColoringSolver):
             else:
                 self.solve_forward_checking_rec(0, np.copy(nodes_values), np.copy(forward_matrix))
             self.values_in_use_size += 1
-            print("iter", self.values_in_use_size)
+            # TODO remove
+            # print("iter", self.values_in_use_size)
 
 
 # solves graph coloring problem for grid graph L(2,1) using forward checking
@@ -43,19 +44,26 @@ class GraphColoringForward(GraphForwardSolver):
         self.temp = 0
 
     def remove_conflicts(self, n, value, forward_matrix):
+        forward_matrix[:, n] += np.zeros(shape=(self.values_in_use_size), dtype=np.int8) + self.FORWARD_BANNED_VALUE
         self.remove_adjacency_conflits(n, value, forward_matrix)
         self.remove_double_adjacency_conflits(n, value, forward_matrix)
+        forward_matrix[value, n] = self.FORWARD_INSERTED_VALUE
+        # TODO remove
+        # print("matr\n", forward_matrix, '\n')
 
     def remove_adjacency_conflits(self, n, value, forward_matrix):
-        # print("matr", forward_matrix)
-        forward_matrix[:, n] = np.zeros(shape=(1, forward_matrix.shape[0])) + self.FORWARD_DEFAULT_VALUE
-        forward_matrix[value, n] = self.FORWARD_INSERTED_VALUE
-        # print(forward_matrix.shape, self.adjacency_matrix.shape)
-        forward_matrix[value] = np.copy(self.adjacency_matrix[n]) * self.FORWARD_BANNED_VALUE
-        # print("matr", forward_matrix)
+        # values_size = forward_matrix.shape[0]
+        row = np.copy(self.adjacency_matrix[n]) * self.FORWARD_BANNED_VALUE
+        forward_matrix[value] += np.copy(row)
+        if value > 0:
+            forward_matrix[value - 1] += np.copy(row)
+        if value < self.values_in_use_size - 1:
+            forward_matrix[value + 1] += np.copy(row)
+
 
     def remove_double_adjacency_conflits(self, n, value, forward_matrix):
-        pass
+        double_adj_row = np.copy(self.double_adjacent_matrix[n]) * self.FORWARD_BANNED_VALUE
+        forward_matrix[value] += double_adj_row
 
     def solve_forward_checking_rec(self, node, nodes_values, forward_matrix):
         if node == self.nodes_size:
@@ -63,20 +71,51 @@ class GraphColoringForward(GraphForwardSolver):
             self.nodes_values_results.append(list(nodes_values))
             return True
         for val in range(self.values_in_use_size):
-            print("nodes_values", nodes_values)
-            print("nodes_i", node)
-            print("forward_matrix", forward_matrix)
-            print(val, node, forward_matrix[val, node])
             if forward_matrix[val, node] == self.FORWARD_DEFAULT_VALUE:
                 temp = nodes_values[node]
+                temp_row_min_1 = np.copy(forward_matrix[val - 1])
+                temp_row = np.copy(forward_matrix[val])
+                temp_row_plus_1 = np.copy(forward_matrix[(val + 1) if val < self.values_in_use_size - 1 else val])
+                col = np.copy(forward_matrix[:, node])
                 nodes_values[node] = val
                 self.remove_conflicts(node, val, forward_matrix)
                 if self.solve_forward_checking_rec(node + 1, np.copy(nodes_values), np.copy(forward_matrix)):
                     return True
                 nodes_values[node] = temp
+                forward_matrix[val - 1] = temp_row_min_1
+                forward_matrix[val] = temp_row
+                forward_matrix[(val + 1) if val < self.values_in_use_size - 1 else val] = temp_row_plus_1
+                forward_matrix[:, node] = col
         return False
 
-    def solve_all_forward_checking_rec(self, node, nodes_values):
+    def solve_all_forward_checking_rec(self, node, nodes_values, forward_matrix):
+        if node == self.nodes_size:
+            self.nodes_values = nodes_values
+            self.nodes_values_results.append(list(nodes_values))
+            return
+        for val in range(self.values_in_use_size):
+            if forward_matrix[val, node] == self.FORWARD_DEFAULT_VALUE:
+                temp = nodes_values[node]
+                temp_row_min_1 = np.copy(forward_matrix[val - 1])
+                temp_row = np.copy(forward_matrix[val])
+                temp_row_plus_1 = np.copy(forward_matrix[(val + 1) if val < self.values_in_use_size - 1 else val])
+                col = np.copy(forward_matrix[:, node])
+                nodes_values[node] = val
+                self.remove_conflicts(node, val, forward_matrix)
+                self.solve_all_forward_checking_rec(node + 1, np.copy(nodes_values), np.copy(forward_matrix))
+                nodes_values[node] = temp
+                forward_matrix[val - 1] = temp_row_min_1
+                forward_matrix[val] = temp_row
+                forward_matrix[(val + 1) if val < self.values_in_use_size - 1 else val] = temp_row_plus_1
+                forward_matrix[:, node] = col
+        return
+
+
+    def calc_curr_index(self,i):
+        return -2 * i % 2 + i
+
+
+    def solve_all_forward_checking_heuristic_rec(self, node, nodes_values):
         if node == self.nodes_size:
             self.nodes_values = nodes_values
             self.nodes_values_results.append(list(nodes_values))

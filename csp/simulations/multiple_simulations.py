@@ -51,6 +51,7 @@ class MultipleSimulation:
                 s = SimulationLatinSquare(i, self.filename + str(i), self.calc_all_possible_results, self.plot)
             s.run()
             results[j] = s.get_results()
+            # print(s.get_nodes_values_results())
             data_saver.save(s.solver.nodes_values_results, self.filename + str(i) + '.txt')
             j += 1
         data_saver.save(results, self.filename + '_.txt')
@@ -68,4 +69,5 @@ class MultipleSimulation:
             result_printer.print_possible_results(filename=(self.filename + '_possibilities.png'),
                                                   title=self.plot_message+ ' - possibilities',
                                                   sides=sides, results=possible_results)
-        plt.show()
+        # TODO uncomment
+        # plt.show()

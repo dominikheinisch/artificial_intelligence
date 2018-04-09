@@ -35,6 +35,9 @@ class Simulation(object):
     def get_results(self):
         return self.solver.get_solving_results()
 
+    def get_nodes_values_results(self):
+        return self.solver.get_nodes_values_results()
+
 
 class SimulationGraphColoring(Simulation):
     def __init__(self, *args):
