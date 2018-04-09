@@ -57,7 +57,7 @@ class GraphColoringBacktracking(GraphBacktrackingSolver):
             temp = nodes_values[node]
             nodes_values[node] = c
             if self.check_conflicts(node, nodes_values) and \
-                    self.solve_backtracking_rec(node + 1, np.copy(nodes_values)):
+                    self.solve_backtracking_rec(node + 1, nodes_values):
                 return True
             nodes_values[node] = temp
         return False
@@ -66,12 +66,15 @@ class GraphColoringBacktracking(GraphBacktrackingSolver):
         if node == self.nodes_size:
             self.nodes_values = nodes_values
             self.nodes_values_results.append(list(nodes_values))
+            return
         for c in range(self.values_in_use_size):
             if node < self.nodes_size:
+                temp = nodes_values[node]
                 nodes_values[node] = c
                 if self.check_conflicts(node, nodes_values):
-                    self.solve_all_backtracking_rec(node + 1, np.copy(nodes_values))
-        return False
+                    self.solve_all_backtracking_rec(node + 1, nodes_values)
+            nodes_values[node] = temp
+        return
 
 
 # solves latin square completing problem
@@ -91,7 +94,7 @@ class LatinSquareBacktracking(GraphBacktrackingSolver):
             return True
         for c in range(self.values_in_use_size):
             self.nodes_values[i] = c
-            if self.check_conflicts(i) and self.solve_backtracking_rec(i + 1):
+            if self.check_conflicts(i, self.nodes_values) and self.solve_backtracking_rec(i + 1):
                 return True
             self.nodes_values[i] = self.DEFAULT_VALUE
         return False
@@ -115,4 +118,4 @@ class LatinSquareBacktracking(GraphBacktrackingSolver):
             # self.solve_all_backtracking_rec(0, np.copy(nodes_values))
             self.solve_all_backtracking_rec(0)
         else:
-            self.solve_backtracking_rec(0, np.copy(nodes_values))
+            self.solve_backtracking_rec(0)

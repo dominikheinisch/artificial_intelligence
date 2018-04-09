@@ -2,8 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from enum import Enum
 
-from csp.simulations import SimulationGraphColoring
-from csp.simulations import SimulationLatinSquare
+from csp.simulations import SimulationGraphColoring, SimulationLatinSquare, SolutionType
 from csp.printers import result_printer
 from csp.utils import data_saver
 
@@ -12,12 +11,6 @@ class SimulationType(Enum):
 
     GRAPH_COLORING = 1
     LATIN_SQUARE = 2
-
-
-class SolutionType(Enum):
-
-    BACKTRACKING = 1
-    FORWARD_CHECKING = 2
 
 
 class MultipleSimulation:
@@ -52,8 +45,9 @@ class MultipleSimulation:
         j = 0
         for i in range(self.min_side, self.max_side):
             if self.simulation_type == SimulationType.GRAPH_COLORING:
-                s = SimulationGraphColoring(i, self.filename + str(i), self.calc_all_possible_results, self.plot)
-            elif self.simulation_type == SimulationType.FILENAME_LATIN_SQUARE:
+                    s = SimulationGraphColoring(i, self.filename + str(i), self.solution_type,
+                                                self.calc_all_possible_results, self.plot)
+            elif self.simulation_type == SimulationType.LATIN_SQUARE:
                 s = SimulationLatinSquare(i, self.filename + str(i), self.calc_all_possible_results, self.plot)
             s.run()
             results[j] = s.get_results()

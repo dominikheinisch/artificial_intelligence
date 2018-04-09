@@ -6,28 +6,28 @@ from csp.solvers.graph_coloring_solver import GraphColoringSolver
 # solves graph coloring problem for grid graph L(2,1) using backtracking
 class GraphForwardSolver(GraphColoringSolver):
 
-    DEFAULT_VALUE = 0
-    BANNED_VALUE = -1
-    INSERTED_VALUE = 1
+    FORWARD_DEFAULT_VALUE = 0
+    FORWARD_BANNED_VALUE = -1
+    FORWARD_INSERTED_VALUE = 1
 
     def __init__(self, *args):
         super(GraphForwardSolver, self).__init__(*args)
         self.min_distance = -1
         self.values_in_use_size = 1
-        self.forward_matrix = None
 
     def solve(self):
         self.solve_forward_checking()
 
     def solve_forward_checking(self):
         while not self.nodes_values_results:
-            self.forward_matrix = np.zeros(shape=(self.nodes_size, self.values_in_use_size), dtype=np.int8) + self.DEFAULT_VALUE
-            # nodes_values = np.zeros(shape=self.nodes_size, dtype=np.int8) + self.DEFAULT_VALUE
+            forward_matrix = np.zeros(shape=(self.values_in_use_size, self.nodes_size), dtype=np.int8) + self.FORWARD_DEFAULT_VALUE
+            nodes_values = np.zeros(shape=self.nodes_size, dtype=np.int8) + self.DEFAULT_VALUE
             if self.calc_all_possible_results:
-                self.solve_all_forward_checking_rec(0)
+                self.solve_all_forward_checking_rec(0, np.copy(nodes_values), np.copy(forward_matrix))
             else:
-                self.solve_forward_checking_rec(0)
+                self.solve_forward_checking_rec(0, np.copy(nodes_values), np.copy(forward_matrix))
             self.values_in_use_size += 1
+            print("iter", self.values_in_use_size)
 
 
 # solves graph coloring problem for grid graph L(2,1) using forward checking
@@ -40,42 +40,52 @@ class GraphColoringForward(GraphForwardSolver):
         self.values_in_use_size = 0
         self.double_adjacent_matrix = double_adjacent_matrix
         self.negate_double_adjacent_matrix = np.logical_not(double_adjacent_matrix)
+        self.temp = 0
 
-    def remove_conflicts(self, n, nodes_values):
-        self.remove_adjacency_conflits(n, nodes_values)
-        self.remove_double_adjacency_conflits(n, nodes_values)
+    def remove_conflicts(self, n, value, forward_matrix):
+        self.remove_adjacency_conflits(n, value, forward_matrix)
+        self.remove_double_adjacency_conflits(n, value, forward_matrix)
 
-    def remove_adjacency_conflits(self, n, nodes_values):
+    def remove_adjacency_conflits(self, n, value, forward_matrix):
+        # print("matr", forward_matrix)
+        forward_matrix[:, n] = np.zeros(shape=(1, forward_matrix.shape[0])) + self.FORWARD_DEFAULT_VALUE
+        forward_matrix[value, n] = self.FORWARD_INSERTED_VALUE
+        # print(forward_matrix.shape, self.adjacency_matrix.shape)
+        forward_matrix[value] = np.copy(self.adjacency_matrix[n]) * self.FORWARD_BANNED_VALUE
+        # print("matr", forward_matrix)
+
+    def remove_double_adjacency_conflits(self, n, value, forward_matrix):
         pass
 
-    def remove_double_adjacency_conflits(self, n, nodes_values):
-        pass
-
-        # no_conflict = self.negate_double_adjacent_matrix[n] * (nodes_values[n] + 1)
-        # return np.min(np.absolute(np.multiply(self.double_adjacent_matrix[n], nodes_values)
-        #                           + no_conflict - nodes_values[n])) > self.double_min_distance
-
-    def solve_backtracking_rec(self, node, nodes_values):
+    def solve_forward_checking_rec(self, node, nodes_values, forward_matrix):
         if node == self.nodes_size:
             self.nodes_values = nodes_values
             self.nodes_values_results.append(list(nodes_values))
             return True
-        for c in range(self.values_in_use_size):
-            temp = nodes_values[node]
-            nodes_values[node] = c
-            if self.check_conflicts(node, nodes_values) and \
-                    self.solve_backtracking_rec(node + 1, np.copy(nodes_values)):
-                return True
-            nodes_values[node] = temp
+        for val in range(self.values_in_use_size):
+            print("nodes_values", nodes_values)
+            print("nodes_i", node)
+            print("forward_matrix", forward_matrix)
+            print(val, node, forward_matrix[val, node])
+            if forward_matrix[val, node] == self.FORWARD_DEFAULT_VALUE:
+                temp = nodes_values[node]
+                nodes_values[node] = val
+                self.remove_conflicts(node, val, forward_matrix)
+                if self.solve_forward_checking_rec(node + 1, np.copy(nodes_values), np.copy(forward_matrix)):
+                    return True
+                nodes_values[node] = temp
         return False
 
-    def solve_all_backtracking_rec(self, node, nodes_values):
+    def solve_all_forward_checking_rec(self, node, nodes_values):
         if node == self.nodes_size:
             self.nodes_values = nodes_values
             self.nodes_values_results.append(list(nodes_values))
+            return
         for c in range(self.values_in_use_size):
             if node < self.nodes_size:
+                temp = nodes_values[node]
                 nodes_values[node] = c
                 if self.check_conflicts(node, nodes_values):
-                    self.solve_all_backtracking_rec(node + 1, np.copy(nodes_values))
-        return False
+                    self.solve_all_backtracking_rec(node + 1, nodes_values)
+            nodes_values[node] = temp
+        return
